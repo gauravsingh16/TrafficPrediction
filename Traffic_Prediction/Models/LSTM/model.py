@@ -1,6 +1,11 @@
-import timer as timer
-from keras.layers import Dense, Activation, Dropout, LSTM
+import keras
 from keras.models import Sequential, load_model
+from keras.layers import CuDNNLSTM, Dense, Dropout, LSTM
+from keras.optimizers import Adam
+import math
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
 class Model():
 	"""A class for an building and inferencing an lstm model"""
@@ -13,7 +18,6 @@ class Model():
 		self.model = load_model(filepath)
 
 	def build_model(self, configs):
-		timer.start()
 
 		for layer in configs['model']['layers']:
 			neurons = layer['neurons'] if 'neurons' in layer else None
@@ -30,9 +34,9 @@ class Model():
 			if layer['type'] == 'dropout':
 				self.model.add(Dropout(dropout_rate))
 
-		self.model.compile(loss=configs['model']['loss'], optimizer=configs['model']['optimizer'])
+		self.model.compile(loss=configs['model']['loss'], optimizer=configs['model']['optimizer'], metrics=['accuracy'])
 
 		print('[Model] Model Compiled')
-		timer.stop()
+
 
 	
