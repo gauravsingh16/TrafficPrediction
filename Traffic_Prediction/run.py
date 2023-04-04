@@ -3,9 +3,9 @@ import json
 import time
 import math
 import matplotlib.pyplot as plt
-from Traffic_Prediction.Experiments.training import ModelTrainer
-from Traffic_Prediction.Models.LSTM.model import Model
-from Traffic_Prediction.Experiments.predict import ModelPredict
+from Experiments.training import ModelTrainer
+from Models.LSTM.model import Model
+from Experiments.predict import ModelPredict
 
 
 def plot_results(predicted_data, true_data):
@@ -30,7 +30,7 @@ def plot_results_multiple(predicted_data, true_data, prediction_len):
 
 
 def main():
-    configs = json.load(open('config.json', 'r'))
+    configs = json.load(open('/home/gaurav/TrafficPrediction/Traffic_Prediction/Models/Configs.json', 'r'))
     if not os.path.exists(configs['model']['save_dir']): os.makedirs(configs['model']['save_dir'])
 
     data = ModelTrainer(
@@ -59,7 +59,7 @@ def main():
 	'''
     # out-of memory generative training
     steps_per_epoch = math.ceil((data.len_train - configs['data']['sequence_length']) / configs['training']['batch_size'])
-    data.train_generator(
+    model.train_generator(
         data_gen=data.generate_train_batch(
             seq_len=configs['data']['sequence_length'],
             batch_size=configs['training']['batch_size'],

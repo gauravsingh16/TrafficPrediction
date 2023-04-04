@@ -10,7 +10,7 @@
 		"cols":	[
 			"Packets"
 		],
-		"sequence_length": 10000,
+		"sequence_length": 50,
 		"train_test_split": 0.85,
 		"normalise": true
 	},

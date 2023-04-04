@@ -1,8 +1,12 @@
 import numpy as np
 from numpy import newaxis
+from keras.models import Sequential
 
 class ModelPredict:
-	
+
+	def __init__(self):
+		self.model = Sequential()
+
 	def predict_point_by_point(self, data):
 	#Predict each timestep given the last sequence of true data, in effect only predicting 1 step ahead each time
 		print('[Model] Predicting Point-by-Point...')

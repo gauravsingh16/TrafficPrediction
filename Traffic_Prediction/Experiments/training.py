@@ -7,19 +7,22 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras.models import Sequential
+from Models.LSTM.model import Model
 
 class ModelTrainer:
 
 	def __init__(self, filename, split, cols, cols1):
-		dataframe = pd.read_csv(filename)
-		i_split = int(len(dataframe) * split)
+		dataframe 		= pd.read_csv(filename)
+		i_split 		= int(len(dataframe) * split)
 		self.data_train = dataframe.get(cols).values[:i_split]
 		self.data_test  = dataframe.get(cols).values[i_split:]
-		self.y_train = dataframe.get(cols1).values[:i_split]
-		self.y_test = dataframe.get(cols1).values[i_split:]
+		self.y_train 	= dataframe.get(cols1).values[:i_split]
+		self.y_test 	= dataframe.get(cols1).values[i_split:]
 		self.len_train  = len(self.data_train)
 		self.len_test   = len(self.data_test)
 		self.len_train_windows = None
+		self.model = Model()
 
 	def get_train_data(self, seq_len, normalise):
 		data_x = []
@@ -27,7 +30,7 @@ class ModelTrainer:
 
 		data_train = np.reshape(self.data_train, (self.data_train.shape[0], self.data_train.shape[1], 1))
 		data_test = np.reshape(self.data_test, (self.data_test.shape[0], self.data_test.shape[1], 1))
-		y_train = np.reshape(self.y_train, (self.y_train.shape[0], y_train.shape[1], 1))
+		y_train = np.reshape(self.y_train, (self.y_train.shape[0], self.y_train.shape[1], 1))
 		y_test = np.reshape(self.y_test, (self.y_test.shape[0], self.y_test.shape[1], 1))
 
 		print(data_train.shape)
@@ -35,57 +38,15 @@ class ModelTrainer:
 		return np.array(data_train), np.array(y_train)
 	
 	def get_test_data(self, seq_len, normalise):
-		data_windows = []
-		for i in range(self.len_test - seq_len):
-			data_windows.append(self.data_test[i:i+seq_len])
 
-		data_windows = np.array(data_windows).astype(float)
-		data_windows = self.normalise_windows(data_windows, single_window=False) if normalise else data_windows
+		data_train = np.reshape(self.data_train, (self.data_train.shape[0], self.data_train.shape[1], 1))
+		data_test = np.reshape(self.data_test, (self.data_test.shape[0], self.data_test.shape[1], 1))
+		y_train = np.reshape(self.y_train, (self.y_train.shape[0], self.y_train.shape[1], 1))
+		y_test = np.reshape(self.y_test, (self.y_test.shape[0], self.y_test.shape[1], 1))
 
-		x = data_windows[:, :-1]
-		y = data_windows[:, -1, [0]]
-		return x,y
+		return data_train,y_train
 
-	def train(self, data_train, y, epochs, batch_size, save_dir):
-			
-		print('[Model] Training Started')
-		print('[Model] %s epochs, %s batch size' % (epochs, batch_size))
-		
-		save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y-%H%M%S'), str(epochs)))
-		callbacks = [
-			EarlyStopping(monitor='val_loss', patience=2),
-			ModelCheckpoint(filepath=save_fname, monitor='val_loss', save_best_only=True)
-		]  
-		self.model.fit(
-			data_train,
-			y,
-			epochs=epochs,
-			batch_size=batch_size,
-			callbacks=callbacks
-		)
-		self.model.save(save_fname)
 
-		print('[Model] Training Completed. Model saved as %s' % save_fname)
-
-	def train_generator(self, data_gen, epochs, batch_size, steps_per_epoch, save_dir):
-
-		print('[Model] Training Started')
-		print('[Model] %s epochs, %s batch size, %s batches per epoch' % (epochs, batch_size, steps_per_epoch))
-		
-		save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y-%H%M%S'), str(epochs)))
-		callbacks = [
-			ModelCheckpoint(filepath=save_fname, monitor='loss', save_best_only=True)
-		]
-		self.model.fit_generator(
-			data_gen,
-			steps_per_epoch=steps_per_epoch,
-			epochs=epochs,
-			callbacks=callbacks,
-			workers=1
-		)	
-		
-		print('[Model] Training Completed. Model saved as %s' % save_fname)
-	 
 	def generate_train_batch(self, seq_len, batch_size, normalise):
 		'''Yield a generator of training data from filename on given list of cols split for train/test'''
 		i = 0
