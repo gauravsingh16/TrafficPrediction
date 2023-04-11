@@ -25,9 +25,20 @@
 		"layers": [
 			{
 				"type": "lstm",
-				"neurons": 128,
+				"neurons": 512,
 				"input_timesteps": 49,
-				"input_dim": 2,
+				"input_dim": 1,
+				"return_seq": true,
+				"activation": "relu"
+			},
+			{
+				"type": "dropout",
+				"rate": 0.2
+			},
+			{
+				"type": "lstm",
+				"neurons": 256,
+                "activation": "relu",
 				"return_seq": true
 			},
 			{
@@ -36,9 +47,8 @@
 			},
 			{
 				"type": "lstm",
-				"neurons": 100,
-				"input_timesteps": 49,
-				"input_dim": 2,
+				"neurons": 512,
+                "activation": "relu",
 				"return_seq": true
 			},
 			{
@@ -47,20 +57,43 @@
 			},
 			{
 				"type": "lstm",
-				"neurons": 100,
-				"input_timesteps": 49,
-				"input_dim": 2,
+				"neurons": 256,
+                "activation": "relu",
 				"return_seq": true
 			},
 			{
 				"type": "dropout",
 				"rate": 0.2
+			},
+			{
+				"type": "lstm",
+				"neurons": 64,
+                "activation": "relu",
+				"return_seq": true
+			},
+			{
+				"type": "dropout",
+				"rate": 0.2
+			},
+			{
+				"type": "lstm",
+				"neurons": 16,
+                "activation": "relu",
+				"return_seq": true
+			},
+			{
+				"type": "dropout",
+				"rate": 0.2
+			},
+			{
+				"type": "lstm",
+				"neurons": 4,
+                "activation": "relu",
+				"return_seq": true
 			},
 			{
 				"type": "dense",
-				"neurons": 1,
-				"return_seq": true,
-                "activation": "linear"
+				"neurons": 1
 			}
 		]
 	}

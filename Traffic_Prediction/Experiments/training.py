@@ -1,51 +1,64 @@
-import os
-import datetime as dt
-from keras.datasets import mnist
-from keras.optimizers import Adam
-import math
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
-from keras.callbacks import EarlyStopping, ModelCheckpoint
-from keras.models import Sequential
+import datetime as dt
 from Models.LSTM.model import Model
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 
 class ModelTrainer:
 
 	def __init__(self, filename, split, cols, cols1):
+		le = LabelEncoder()
+		scaler = MinMaxScaler(feature_range=(0,1))
+		self.yscaler = MinMaxScaler(feature_range=(0,1))
 		dataframe 		= pd.read_csv(filename)
 		i_split 		= int(len(dataframe) * split)
-		self.data_train = dataframe.get(cols).values[:i_split]
-		self.data_test  = dataframe.get(cols).values[i_split:]
-		self.y_train 	= dataframe.get(cols1).values[:i_split]
-		self.y_test 	= dataframe.get(cols1).values[i_split:]
+		sender_label = dataframe.get(["Sender's IP"])
+		receiver_label = dataframe.get(["Receiver's IP"])
+		protocol_label = dataframe.get(["Protocol Stack"])
+
+		dataframe["Sender's IP"] = le.fit_transform(sender_label)
+		dataframe["Receiver's IP"] = le.fit_transform(receiver_label)
+		dataframe["Protocol Stack"] = le.fit_transform(protocol_label)
+		dataframe['TimeStamp'] = dataframe['TimeStamp'].str.replace('.','')
+		dataframe['TimeStamp'] = dataframe['TimeStamp'].str.replace(':','')
+		dataframe[["Sr.No.", "TimeStamp", "Packets"]] = scaler.fit_transform(dataframe.get(["Sr.No.", "TimeStamp", "Packets"]))
+		dataframe[["Packets"]] = self.yscaler.fit_transform(dataframe.get(["Packets"]))
+		self.data_train = dataframe.get(["Sr.No.", "TimeStamp", "Sender's IP", "Receiver's IP", "Protocol Stack"]).values[:i_split]
+		self.data_test  = dataframe.get(["Sr.No.", "TimeStamp", "Sender's IP", "Receiver's IP", "Protocol Stack"]).values[i_split:]
+		self.y_train 	= dataframe.get(["Packets"]).values[:i_split]
+		self.y_test 	= dataframe.get(["Packets"]).values[i_split:]
+		
 		self.len_train  = len(self.data_train)
 		self.len_test   = len(self.data_test)
+
 		self.len_train_windows = None
 		self.model = Model()
 
-	def get_train_data(self, seq_len, normalise):
-		data_x = []
-		data_y = []
+	def get_train_data(self):
 
 		data_train = np.reshape(self.data_train, (self.data_train.shape[0], self.data_train.shape[1], 1))
-		data_test = np.reshape(self.data_test, (self.data_test.shape[0], self.data_test.shape[1], 1))
 		y_train = np.reshape(self.y_train, (self.y_train.shape[0], self.y_train.shape[1], 1))
-		y_test = np.reshape(self.y_test, (self.y_test.shape[0], self.y_test.shape[1], 1))
 
-		print(data_train.shape)
-
-		return np.array(data_train), np.array(y_train)
+		return data_train, y_train
 	
-	def get_test_data(self, seq_len, normalise):
-
-		data_train = np.reshape(self.data_train, (self.data_train.shape[0], self.data_train.shape[1], 1))
+	def get_test_data(self):
+        
 		data_test = np.reshape(self.data_test, (self.data_test.shape[0], self.data_test.shape[1], 1))
-		y_train = np.reshape(self.y_train, (self.y_train.shape[0], self.y_train.shape[1], 1))
 		y_test = np.reshape(self.y_test, (self.y_test.shape[0], self.y_test.shape[1], 1))
 
-		return data_train,y_train
+		return data_test,y_test
 
+	def transform(self, y_train, train_predictions, y_test, test_prediction):
+		yTrain = self.yscaler.inverse_transform(y_train.reshape(-1, 1))
+		yTrainPredict = self.yscaler.inverse_transform(train_predictions[:, 0, 0].reshape(-1, 1))
+		yTest = self.yscaler.inverse_transform(y_test.reshape(-1, 1))
+		yTestPredict = self.yscaler.inverse_transform(test_prediction[:, 0, 0].reshape(-1, 1))
+		print(yTrain.shape)
+		print(yTrainPredict.shape)
+		print(yTest.shape)
+		print(yTestPredict.shape)
+	
+		return yTrainPredict, yTrain
 
 	def generate_train_batch(self, seq_len, batch_size, normalise):
 		'''Yield a generator of training data from filename on given list of cols split for train/test'''
@@ -63,25 +76,3 @@ class ModelTrainer:
 				y_batch.append(y)
 				i += 1
 		yield np.array(x_batch), np.array(y_batch)
-
-
-	def _next_window(self, i, seq_len, normalise):
-		'''Generates the next data window from the given index location i'''
-		window = self.data_train[i:i+seq_len]
-		window = self.normalise_windows(window, single_window=True)[0] if normalise else window
-		x = window[:-1]
-		y = window[-1, [0]]
-		return x, y
-
-	def normalise_windows(self, window_data, single_window=False):
-		'''Normalise window with a base value of zero'''
-		normalised_data = []
-		window_data = [window_data] if single_window else window_data
-		for window in window_data:
-			normalised_window = []
-			for col_i in range(window.shape[1]):
-				normalised_col = [((float(p) / float(window[0, col_i])) - 1) for p in window[:, col_i]]
-				normalised_window.append(normalised_col)
-			normalised_window = np.array(normalised_window).T # reshape and transpose array back into original multidimensional format
-			normalised_data.append(normalised_window)
-		return np.array(normalised_data)
