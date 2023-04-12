@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 from Models.LSTM.model import Model
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 
 class ModelTrainer:
@@ -57,7 +58,10 @@ class ModelTrainer:
 		print(yTrainPredict.shape)
 		print(yTest.shape)
 		print(yTestPredict.shape)
-	
+		plt.plot(yTrain, color='blue')
+		plt.plot(self.y_train, color='red')
+		plt.show()
+		
 		return yTrainPredict, yTrain
 
 	def generate_train_batch(self, seq_len, batch_size, normalise):

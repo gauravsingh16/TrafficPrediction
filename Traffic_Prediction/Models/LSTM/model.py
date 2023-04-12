@@ -1,11 +1,12 @@
 import os
 import math
+import time
 import numpy as np
 import pandas as pd
 import datetime as dt
 from numpy import newaxis
 from keras.models import Sequential, load_model
-from keras.layers import Dense, Dropout, LSTM
+from keras.layers import Dense, Dropout, LSTM, TimeDistributed
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 
 
@@ -29,7 +30,7 @@ class Model():
 			input_dim = layer['input_dim'] if 'input_dim' in layer else None
 
 			if layer['type'] == 'dense':
-				self.model.add(Dense(neurons, activation=activation))
+				self.model.add(TimeDistributed(Dense(neurons, activation=activation)))
 			if layer['type'] == 'lstm':
 				self.model.add(LSTM(neurons, input_shape=(data_train.shape[1], input_dim), return_sequences=return_seq))
 			if layer['type'] == 'dropout':
@@ -40,7 +41,7 @@ class Model():
 		print('[Model] Model Compiled')
 
 	def train(self, data_train, y, epochs, batch_size, save_dir):
-			
+
 		print('[Model] Training Started')
 		print('[Model] %s epochs, %s batch size' % (epochs, batch_size))
 		
@@ -62,6 +63,7 @@ class Model():
 
 	def train_generator(self, data_train, y_train, data_test, y_test, epochs, batch_size,  save_dir):
 
+		start_time = time.time()
 		print('[Model] Training Started')
 		print('[Model] %s epochs, %s batch size' % (epochs, batch_size))
 		
@@ -77,8 +79,10 @@ class Model():
 			validation_data=(data_test, y_test),
 			callbacks=callbacks,
 			workers=1
-		)	
-		
+		)
+
+		time_elapsed = time.time()-start_time
+		print('Time Taken for training %s' % time_elapsed)
 		print('[Model] Training Completed. Model saved as %s' % save_fname)
 
 	def predict_point_by_point(self, train_data, test_data):

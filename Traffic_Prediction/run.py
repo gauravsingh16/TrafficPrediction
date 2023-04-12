@@ -1,6 +1,7 @@
 import os
 import json
 import math
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from Models.LSTM.model import Model
@@ -74,7 +75,7 @@ def main():
     #predictions = model_predict.predict_sequences_multiple(x_test, configs['data']['sequence_length'], configs['data']['sequence_length'])
     #predictions = model.predict_sequence_full(x_test, configs['data']['sequence_length'])
     #plot_results_multiple(predictions, y_test, configs['data']['sequence_length'])
-    
+
     train_predictions, test_prediction = model_predict.predict_point_by_point(x_train, x_test)
     trainScore = np.sqrt(mean_squared_error(y_train[:, 0, 0], train_predictions[:, 0, 0]))
     print('Train Score: %.2f RMSE' % (trainScore))
