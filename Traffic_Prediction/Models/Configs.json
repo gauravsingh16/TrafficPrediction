@@ -2,7 +2,7 @@
 	"data": {
 		"filename": "/home/gaurav/TrafficPrediction/dataNetwork.csv",
 		"columns": [
-			"TimeStamp",
+			"Timestamp",
 			"Sender's IP",
             "Receiver's IP",
             "Protocol Stack"
@@ -10,9 +10,7 @@
 		"cols":	[
 			"Packets"
 		],
-		"sequence_length": 50,
-		"train_test_split": 0.85,
-		"normalise": true
+		"train_test_split": 0.85
 	},
 	"training": {
 		"epochs": 2,

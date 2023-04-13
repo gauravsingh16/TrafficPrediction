@@ -1,10 +1,6 @@
 import os
-import math
 import time
-import numpy as np
-import pandas as pd
 import datetime as dt
-from numpy import newaxis
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, LSTM, TimeDistributed
 from keras.callbacks import EarlyStopping, ModelCheckpoint
@@ -37,29 +33,8 @@ class Model():
 				self.model.add(Dropout(dropout_rate))
 
 		self.model.compile(loss=configs['model']['loss'], optimizer=configs['model']['optimizer'], metrics=['accuracy'])
-
-		print('[Model] Model Compiled')
-
-	def train(self, data_train, y, epochs, batch_size, save_dir):
-
-		print('[Model] Training Started')
-		print('[Model] %s epochs, %s batch size' % (epochs, batch_size))
 		
-		save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y-%H%M%S'), str(epochs)))
-		callbacks = [
-			EarlyStopping(monitor='val_loss', patience=2),
-			ModelCheckpoint(filepath=save_fname, monitor='val_loss', save_best_only=True)
-		]  
-		self.model.fit(
-			data_train,
-			y,
-			epochs=epochs,
-			batch_size=batch_size,
-			callbacks=callbacks
-		)
-		self.model.save(save_fname)
-
-		print('[Model] Training Completed. Model saved as %s' % save_fname)
+		print('[Model] Model Compiled')
 
 	def train_generator(self, data_train, y_train, data_test, y_test, epochs, batch_size,  save_dir):
 
@@ -69,9 +44,10 @@ class Model():
 		
 		save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y-%H%M%S'), str(epochs)))
 		callbacks = [
+			EarlyStopping(monitor='val_loss', patience=2),
 			ModelCheckpoint(filepath=save_fname, monitor='loss', save_best_only=True)
 		]
-		self.model.fit(
+		history = self.model.fit(
 			data_train,
 			y_train,
 			batch_size,
@@ -80,10 +56,12 @@ class Model():
 			callbacks=callbacks,
 			workers=1
 		)
-
+		
 		time_elapsed = time.time()-start_time
 		print('Time Taken for training %s' % time_elapsed)
 		print('[Model] Training Completed. Model saved as %s' % save_fname)
+
+		return history.history['accuracy'], history.history['val_accuracy'], history.history['loss'], history.history['val_loss']
 
 	def predict_point_by_point(self, train_data, test_data):
 	#Predict each timestep given the last sequence of true data, in effect only predicting 1 step ahead each time
@@ -93,29 +71,4 @@ class Model():
 		print(train_predict.shape, test_predict.shape)
 		
 		return train_predict, test_predict
-	
-	def predict_sequences_multiple(self, data, window_size, prediction_len):
-		#Predict sequence of 50 steps before shifting prediction run forward by 50 steps
-		print('[Model] Predicting Sequences Multiple...')
-		prediction_seqs = []
-		for i in range(int(len(data)/prediction_len)):
-			curr_frame = data[i*prediction_len]
-			predicted = []
-			for j in range(prediction_len):
-				predicted.append(self.model.predict(curr_frame[newaxis,:,:])[0,0])
-				curr_frame = curr_frame[1:]
-				curr_frame = np.insert(curr_frame, [window_size-2], predicted[-1], axis=0)
-			prediction_seqs.append(predicted)
-		return prediction_seqs
-
-	def predict_sequence_full(self, data, window_size):
-		#Shift the window by 1 new prediction each time, re-run predictions on new window
-		print('[Model] Predicting Sequences Full...')
-		curr_frame = data[0]
-		predicted = []
-		for i in range(len(data)):
-			predicted.append(self.model.predict(curr_frame[newaxis,:,:])[0,0])
-			curr_frame = curr_frame[1:]
-			curr_frame = np.insert(curr_frame, [window_size-2], predicted[-1], axis=0)
-		return predicted
 	

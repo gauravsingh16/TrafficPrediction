@@ -1,22 +1,28 @@
-import json
 import csv
 
-with open("/home/gaurav/TrafficPrediction/Traffic_Prediction/dataset Network.json") as json_file:
-  data = json.load(json_file)
+class InputSampler():
 
-network_data = data["Sheet1"]
+  def create_sample(self):
+    csv_file = open('dataNetwork.csv', 'w')
+    csv_writer = csv.writer(csv_file)
+    csv_writer.writerow(["SrNo", "Timestamp", "Sender's IP", "Receiver's IP", "Protocol Stack", "Packets"])
+    network_data = open("/home/gaurav/TrafficPrediction/Traffic_Prediction/dataset1.csv", "r")
+    myline = network_data.readline()
+    count = 0
 
-csv_file = open('dataNetwork.csv', 'w')
-csv_writer = csv.writer(csv_file)
-count = 0
+    while myline:
+        if myline == None:
+          continue
+        header = myline.strip("\n").strip('"').split()
+        csv_writer.writerow(header)
+        count+=1
+        myline = network_data.readline()
+        if count == 2000:
+          print("check", network_data)
+          break
 
-for data in network_data:
-  if data == None:
-    continue
-  if count == 0:
-    header = data.keys()
-    csv_writer.writerow(header)
-    count+=1
-  csv_writer.writerow(data.values())
+    csv_file.close()
+    network_data.close() 
+    print(count)
 
-csv_file.close()
+  
