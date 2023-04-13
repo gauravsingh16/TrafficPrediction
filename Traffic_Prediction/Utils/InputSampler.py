@@ -1,4 +1,5 @@
 import csv
+import os
 
 class InputSampler():
 
@@ -8,6 +9,7 @@ class InputSampler():
     csv_writer.writerow(["SrNo", "Timestamp", "Sender's IP", "Receiver's IP", "Protocol Stack", "Packets"])
     network_data = open("/home/gaurav/TrafficPrediction/Traffic_Prediction/dataset1.csv", "r")
     myline = network_data.readline()
+
     count = 0
 
     while myline:
