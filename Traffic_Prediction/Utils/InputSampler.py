@@ -23,7 +23,7 @@ class InputSampler():
     '''
     if sample_size > self.nd_size:
        return False
-    csv_file = open('dataNetwork'+ str(sample_size) + time.ctime() + '.csv', 'w') 
+    csv_file = open('dataNetwork.csv', 'w') 
     csv_writer = csv.writer(csv_file, delimiter='\t')
     csv_writer.writerow(["SrNo", "Timestamp", "Sender's IP", "Receiver's IP", "Protocol Stack", "Packets"])
     start_index = random.randint(0, self.nd_size - sample_size)
