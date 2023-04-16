@@ -1,5 +1,6 @@
 import os
 import json
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 from Models.LSTM.model import Model
@@ -54,20 +55,35 @@ def main():
    
     data_train, data_test, y_train, y_test = data.create_database(configs['data']['columns'],
         configs['data']['cols'])
-    x_train, y_train = data.get_train_data(data_train, y_train)
-    x_test, y_test = data.get_test_data(data_test, y_test)
-
-    model.build_model(configs, x_train)
-
-    print(x_train.shape, y_train.shape, x_test.shape, y_test.shape)
-
+    x_train, y_train = data.get_train_data(data_train, y_train, seq_len=configs['data']['sequence_length'],
+        normalise=configs['data']['normalise'])
+    x_test, y_tests = data.get_test_data(data_test, y_test, seq_len=configs['data']['sequence_length'],
+        normalise=configs['data']['normalise'])
+    y_trains = np.array(y_train)
+    x_trains = np.array(x_train)
+    x_tests = np.array(x_test)
+    y_tests = np.array(y_tests)   
+    print(y_trains.shape, x_trains.shape, x_tests.shape, y_tests.shape)
+    model.build_model(configs, data_train)
+    #print(x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+    data_gen= data.generate_train_batch(
+            data_train = data_train,
+            seq_len = configs['data']['sequence_length'],
+            batch_size= configs['training']['batch_size'],
+            normalise = configs['data']['normalise'])
+    len_train = len(data_train)
+    print(data_gen)
+    
+    steps_per_epoch = math.ceil((len_train - configs['data']['sequence_length']) / configs['training']['batch_size'])
     accuracy, val_accuracy, loss, val_loss = model.train_generator(
         x_train,
         y_train,
         x_test,
         y_test,
+        data_gen,
         epochs=configs['training']['epochs'],
         batch_size=configs['training']['batch_size'],
+        steps_per_epoch = steps_per_epoch,
         save_dir=configs['model']['save_dir']
     )
 
