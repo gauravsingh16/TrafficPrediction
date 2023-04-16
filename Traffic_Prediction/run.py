@@ -42,10 +42,11 @@ def plot_loss(loss, val_loss):
 
 def main():
 
-    configs = json.load(open('/home/gaurav/TrafficPrediction/Traffic_Prediction/Models/Configs.json', 'r'))
+    configs = json.load(open('/Users/shrey_98/Desktop/TrafficPrediction/Traffic_Prediction/Models/Configs.json', 'r'))
     if not os.path.exists(configs['model']['save_dir']): os.makedirs(configs['model']['save_dir'])
     dataset = InputSampler()
-    dataset.create_sample()
+    dataset.create_sample() # default size is 20000
+
     model = Model()
     data = DataLoader(
         os.path.join('data',configs['data']['filename']),

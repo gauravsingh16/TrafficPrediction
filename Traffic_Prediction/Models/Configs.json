@@ -1,6 +1,6 @@
 {
 	"data": {
-		"filename": "/home/gaurav/TrafficPrediction/dataNetwork.csv",
+		"filename": "/Users/shrey_98/Desktop/TrafficPrediction/Traffic_Prediction/dataset Network.json",
 		"columns": [
 			"Timestamp",
 			"Sender's IP",
