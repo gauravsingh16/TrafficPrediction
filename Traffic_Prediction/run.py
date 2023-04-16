@@ -1,6 +1,7 @@
 import os
 import json
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from Models.LSTM.model import Model
 from Utils.InputSampler import InputSampler
@@ -41,7 +42,8 @@ def plot_loss(loss, val_loss):
     plt.show()
 
 def main():
-
+    print(pd.show_versions())
+    
     configs = json.load(open('/home/gaurav/TrafficPrediction/Traffic_Prediction/Models/Configs.json', 'r'))
     if not os.path.exists(configs['model']['save_dir']): os.makedirs(configs['model']['save_dir'])
     dataset = InputSampler()
