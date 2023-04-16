@@ -40,12 +40,29 @@ def plot_loss(loss, val_loss):
     plt.legend()
     plt.show()
 
+def plot_train_data_time_taken(train_size, time_elapsed):
+    fig = plt.figure(facecolor='white')
+    ax = fig.add_subplot(111)
+    ax.plot(train_size, label='Train size')
+    plt.plot(time_elapsed, label='Time elapsed')
+    plt.legend()
+    plt.show()
+    
+    
 def main():
+        
+    dataset = InputSampler()
+    input_size = int(input("Specify the sample size : "))
+    default_size = 20000
+    
+    if input_size <= 0 or None:
+        dataset.create_sample(default_size)
+    else:
+        dataset.create_sample(input_size)
 
     configs = json.load(open('/home/gaurav/TrafficPrediction/Traffic_Prediction/Models/Configs.json', 'r'))
     if not os.path.exists(configs['model']['save_dir']): os.makedirs(configs['model']['save_dir'])
-    dataset = InputSampler()
-    dataset.create_sample()
+
     model = Model()
     data = DataLoader(
         os.path.join('data',configs['data']['filename']),
@@ -56,12 +73,12 @@ def main():
         configs['data']['cols'])
     x_train, y_train = data.get_train_data(data_train, y_train)
     x_test, y_test = data.get_test_data(data_test, y_test)
-
+    
+    size_of_training = len(x_train)
+    
     model.build_model(configs, x_train)
 
-    print(x_train.shape, y_train.shape, x_test.shape, y_test.shape)
-
-    accuracy, val_accuracy, loss, val_loss = model.train_generator(
+    accuracy, val_accuracy, loss, val_loss , time_elapsed = model.train_generator(
         x_train,
         y_train,
         x_test,
@@ -84,6 +101,7 @@ def main():
     plot_validation_results(yTestPredict,yTest)
     plot_accuracy(accuracy, val_accuracy)
     plot_loss(loss, val_loss)
+    plot_train_data_time_taken(size_of_training, time_elapsed)
 
 if __name__ == '__main__':
     main()

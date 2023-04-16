@@ -1,30 +1,36 @@
 import csv
-import os
+import random
 
 class InputSampler():
+  
+  def __init__(self):
+    self.database = '/home/gaurav/TrafficPrediction/Traffic_Prediction/dataset1.csv'
 
-  def create_sample(self):
-    csv_file = open('dataNetwork.csv', 'w')
+  def create_sample(self, dataset_size):
+    '''
+      Fetches sample_size continuous values from self.networkdata,
+      Stores as csv file of the format 'dataNetwork_20000_Sun Apr 16 20:11:07 2023.csv'
+    '''
+    data = []
+    nd_size = 0
+    csv_file = open('dataNetwork.csv', 'w') 
     csv_writer = csv.writer(csv_file)
     csv_writer.writerow(["SrNo", "Timestamp", "Sender's IP", "Receiver's IP", "Protocol Stack", "Packets"])
-    network_data = open("/home/gaurav/TrafficPrediction/Traffic_Prediction/dataset1.csv", "r")
+    
+    network_data = open(self.database, "r")
     myline = network_data.readline()
-
-    count = 0
-
     while myline:
-        if myline == None:
-          continue
         header = myline.strip("\n").strip('"').split()
-        csv_writer.writerow(header)
-        count+=1
+        data.append(header)                                                                                                                                        
         myline = network_data.readline()
-        if count == 2000:
-          print("check", network_data)
-          break
-
+    
+    self.nd_size = len(data) 
+    start_index = random.randint(0, self.nd_size - dataset_size)
+    sample_data = data[start_index : start_index + dataset_size + 1]
+    print(sample_data)
+    for i_data in sample_data:
+      csv_writer.writerow(i_data)
     csv_file.close()
-    network_data.close() 
-    print(count)
-
+    network_data.close()
+    return True
   

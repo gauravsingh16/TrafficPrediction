@@ -61,14 +61,13 @@ class Model():
 		print('Time Taken for training %s' % time_elapsed)
 		print('[Model] Training Completed. Model saved as %s' % save_fname)
 
-		return history.history['accuracy'], history.history['val_accuracy'], history.history['loss'], history.history['val_loss']
+		return history.history['accuracy'], history.history['val_accuracy'], history.history['loss'], history.history['val_loss'], time_elapsed
 
 	def predict_point_by_point(self, train_data, test_data):
 	#Predict each timestep given the last sequence of true data, in effect only predicting 1 step ahead each time
 		print('[Model] Predicting Point-by-Point...')
 		train_predict = self.model.predict(train_data)
 		test_predict = self.model.predict(test_data)
-		print(train_predict.shape, test_predict.shape)
 		
 		return train_predict, test_predict
 	
