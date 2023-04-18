@@ -1,6 +1,7 @@
 import os
 import json
 import numpy as np
+import datetime as dt
 import matplotlib.pyplot as plt
 from Models.LSTM.model import Model
 from Utils.InputSampler import InputSampler
@@ -61,7 +62,8 @@ def main():
         dataset.create_sample(input_size)
 
     configs = json.load(open('/home/gaurav/TrafficPrediction/Traffic_Prediction/Models/Configs.json', 'r'))
-    if not os.path.exists(configs['model']['save_dir']): os.makedirs(configs['model']['save_dir'])
+    if not os.path.exists(configs['model']['save_dir']): 
+        os.makedirs(configs['model']['save_dir'])
 
     model = Model()
     data = DataLoader(
@@ -76,7 +78,16 @@ def main():
     
     size_of_training = len(x_train)
     
-    model.build_model(configs, x_train)
+    value = input('Do you want to create new model??? Respond with Yes/No. : ')
+    
+    if value == "Yes":
+        
+        model.build_model(configs, x_train)
+    elif value == "No":
+        
+        model.load_model(os.path.join(configs['model']['save_dir'], '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y'), configs['training']['epochs'])))
+    else:
+        print('Try Again')
 
     accuracy, val_accuracy, loss, val_loss , time_elapsed = model.train_generator(
         x_train,
@@ -101,7 +112,7 @@ def main():
     plot_validation_results(yTestPredict,yTest)
     plot_accuracy(accuracy, val_accuracy)
     plot_loss(loss, val_loss)
-    plot_train_data_time_taken(size_of_training, time_elapsed)
+    #plot_train_data_time_taken(size_of_training, time_elapsed)
 
 if __name__ == '__main__':
     main()

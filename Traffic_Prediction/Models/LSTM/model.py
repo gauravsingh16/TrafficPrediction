@@ -42,9 +42,9 @@ class Model():
 		print('[Model] Training Started')
 		print('[Model] %s epochs, %s batch size' % (epochs, batch_size))
 		
-		save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y-%H%M%S'), str(epochs)))
+		save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y'), str(epochs)))
 		callbacks = [
-			EarlyStopping(monitor='val_loss', patience=2),
+			EarlyStopping(monitor='val_loss', patience=10),
 			ModelCheckpoint(filepath=save_fname, monitor='loss', save_best_only=True)
 		]
 		history = self.model.fit(
@@ -52,9 +52,8 @@ class Model():
 			y_train,
 			batch_size,
 			epochs=epochs,
+			callbacks = callbacks,
 			validation_data=(data_test, y_test),
-			callbacks=callbacks,
-			workers=1
 		)
 		
 		time_elapsed = time.time()-start_time
