@@ -1,7 +1,9 @@
 import os
 import json
+import argparse
 import numpy as np
 import pandas as pd
+import datetime as dt
 import matplotlib.pyplot as plt
 from Models.LSTM.model import Model
 from Utils.InputSampler import InputSampler
@@ -42,12 +44,34 @@ def plot_loss(loss, val_loss):
     plt.show()
 
 def main():
-    print(pd.show_versions())
     
-    configs = json.load(open('/home/gaurav/TrafficPrediction/Traffic_Prediction/Models/Configs.json', 'r'))
-    if not os.path.exists(configs['model']['save_dir']): os.makedirs(configs['model']['save_dir'])
+
     dataset = InputSampler()
-    dataset.create_sample()
+    input_size = int(input("Specify the sample size : "))
+    default_size = 20000
+    
+    if input_size <= 0 or None:
+        dataset.create_sample(default_size)
+    else:
+        dataset.create_sample(input_size)
+        
+    model_input = input("Specificy the model you want to try. Please choose LSTM or MLP : ")
+    
+    if model_input == "LSTM":
+        configs_path = os.path.join(
+            os.path.dirname(__file__), "Experiments/LSTM", "Configs.json"
+        )
+        
+        print(configs_path)
+    elif model_input == "MLP":
+        configs_path = os.path.join(
+            os.path.dirname(__file__), "Experiments/MLP-LSTM", "Configs.json"
+        )
+
+    configs = json.load(open(configs_path, 'r'))
+    if not os.path.exists(configs['model']['save_dir']): 
+        os.makedirs(configs['model']['save_dir'])
+
     model = Model()
     data = DataLoader(
         os.path.join('data',configs['data']['filename']),
@@ -58,12 +82,22 @@ def main():
         configs['data']['cols'])
     x_train, y_train = data.get_train_data(data_train, y_train)
     x_test, y_test = data.get_test_data(data_test, y_test)
+    
+    size_of_training = len(x_train)
+    
+    value = input('Do you want to create new model??? Respond with Yes/No. : ')
+    
+    if value == "Yes":
+        
+        model.build_model(configs, x_train)
+    elif value == "No":
+        print(configs['model']['save_dir'])
+        
+        model.load_model(os.path.join(configs['model']['save_dir'], '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y'), configs['training']['epochs'])))
+    else:
+        print('Try Again')
 
-    model.build_model(configs, x_train)
-
-    print(x_train.shape, y_train.shape, x_test.shape, y_test.shape)
-
-    accuracy, val_accuracy, loss, val_loss = model.train_generator(
+    accuracy, val_accuracy, loss, val_loss , time_elapsed = model.train_generator(
         x_train,
         y_train,
         x_test,
@@ -72,7 +106,6 @@ def main():
         batch_size=configs['training']['batch_size'],
         save_dir=configs['model']['save_dir']
     )
-
     train_predictions, test_prediction = model.predict_point_by_point(x_train, x_test)
 
     trainScore = np.sqrt(mean_squared_error(y_train[:, 0, 0], train_predictions[:, 0, 0]))

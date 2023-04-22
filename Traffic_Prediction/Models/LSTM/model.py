@@ -4,7 +4,7 @@ import datetime as dt
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, LSTM, TimeDistributed
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-
+from keras import optimizers
 
 class Model():
 	"""A class for an building and inferencing an lstm model"""
@@ -27,12 +27,14 @@ class Model():
 
 			if layer['type'] == 'dense':
 				self.model.add(TimeDistributed(Dense(neurons, activation=activation)))
+			if layer['type'] == 'LSTM':
+				self.model.add(LSTM(neurons, input_shape=(data_train.shape[1], input_dim), return_sequences=return_seq, activation = activation))
 			if layer['type'] == 'lstm':
-				self.model.add(LSTM(neurons, input_shape=(data_train.shape[1], input_dim), return_sequences=return_seq))
+				self.model.add(LSTM(neurons, return_sequences = return_seq, activation = activation))
 			if layer['type'] == 'dropout':
 				self.model.add(Dropout(dropout_rate))
 
-		self.model.compile(loss=configs['model']['loss'], optimizer=configs['model']['optimizer'], metrics=['accuracy'])
+		self.model.compile(loss=configs['model']['loss'], optimizer=optimizers.Adam(learning_rate=0.001), metrics=['accuracy'])
 		
 		print('[Model] Model Compiled')
 
@@ -42,9 +44,9 @@ class Model():
 		print('[Model] Training Started')
 		print('[Model] %s epochs, %s batch size' % (epochs, batch_size))
 		
-		save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y-%H%M%S'), str(epochs)))
+		save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y'), str(epochs)))
 		callbacks = [
-			EarlyStopping(monitor='val_loss', patience=2),
+			EarlyStopping(monitor='val_loss', patience=10),
 			ModelCheckpoint(filepath=save_fname, monitor='loss', save_best_only=True)
 		]
 		history = self.model.fit(
@@ -53,15 +55,14 @@ class Model():
 			batch_size,
 			epochs=epochs,
 			validation_data=(data_test, y_test),
-			callbacks=callbacks,
-			workers=1
+			callbacks=callbacks
 		)
 		
 		time_elapsed = time.time()-start_time
 		print('Time Taken for training %s' % time_elapsed)
 		print('[Model] Training Completed. Model saved as %s' % save_fname)
 
-		return history.history['accuracy'], history.history['val_accuracy'], history.history['loss'], history.history['val_loss']
+		return history.history['accuracy'], history.history['val_accuracy'], history.history['loss'], history.history['val_loss'], time_elapsed
 
 	def predict_point_by_point(self, train_data, test_data):
 	#Predict each timestep given the last sequence of true data, in effect only predicting 1 step ahead each time

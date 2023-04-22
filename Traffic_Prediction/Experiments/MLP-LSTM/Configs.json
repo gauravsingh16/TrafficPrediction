@@ -1,0 +1,40 @@
+{
+	"data": {
+		"filename": "/home/gaurav/TrafficPrediction/dataNetwork.csv",
+		"columns": [
+			"SrNo",
+			"Timestamp",
+			"Sender's IP",
+            "Receiver's IP",
+            "Protocol Stack"
+		],
+		"cols":	[
+			"Packets"
+		],
+		"train_test_split": 0.80
+	},
+	"training": {
+		"epochs": 50,
+		"batch_size": 32
+	},
+	"model": {
+		"loss": "mse",
+		"optimizer": "adam",
+		"save_dir": "MLP_LSTM/saved_models",
+		"layers": [
+			{
+				"type": "dense",
+				"neurons": 128,
+				"activation": "relu"
+			},
+			{
+				"type": "dropout",
+				"rate": 0.2
+			},
+			{
+				"type": "dense",
+				"neurons": 1
+			}
+		]
+	}
+}

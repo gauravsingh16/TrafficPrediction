@@ -26,16 +26,12 @@ class AE_LSTM_model():
 
 			if layer['type'] == 'dense':
 				self.model.add(TimeDistributed(Dense(neurons, activation=activation)))
-			if layer['type'] == 'lstm':
-				self.model.add(LSTM(neurons, input_shape=(data_train.shape[1], input_dim), return_sequences=return_seq))
 			if layer['type'] == 'dropout':
 				self.model.add(Dropout(dropout_rate))
-            if layer['type'] == 'repeatVector':
-                self.model.add(RepeatVector(y_train.shape[1]))
 
-        self.model.compile(loss=configs['model']['loss'], optimizer=configs['model']['optimizer'], metrics=['accuracy'])
+		self.model.compile(loss=configs['model']['loss'], optimizer=configs['model']['optimizer'], metrics=['accuracy'])
 	
-        print('[Model] Model Compiled')
+		print('[Model] Model Compiled')
 
 	def train_generator(self, data_train, y_train, data_test, y_test, epochs, batch_size,  save_dir):
 
