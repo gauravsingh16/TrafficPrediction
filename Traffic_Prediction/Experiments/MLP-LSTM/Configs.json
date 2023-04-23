@@ -24,7 +24,7 @@
 		"layers": [
 			{
 				"type": "dense",
-				"neurons": 128,
+				"neurons": 62,
 				"activation": "relu"
 			},
 			{

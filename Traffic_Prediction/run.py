@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import matplotlib.pyplot as plt
-from Models.LSTM.model import Model
+from Models.LSTM.model import AELSTM_Model
+from Models.MLP_LSTM.model import MLP_LSTM_model
 from Utils.InputSampler import InputSampler
 from Experiments.datasetgenerator import DataLoader
 from sklearn.metrics import mean_squared_error
@@ -61,18 +62,18 @@ def main():
         configs_path = os.path.join(
             os.path.dirname(__file__), "Experiments/LSTM", "Configs.json"
         )
+        model = AELSTM_Model()
         
-        print(configs_path)
     elif model_input == "MLP":
         configs_path = os.path.join(
             os.path.dirname(__file__), "Experiments/MLP-LSTM", "Configs.json"
         )
+        model = MLP_LSTM_model()
 
     configs = json.load(open(configs_path, 'r'))
     if not os.path.exists(configs['model']['save_dir']): 
         os.makedirs(configs['model']['save_dir'])
 
-    model = Model()
     data = DataLoader(
         os.path.join('data',configs['data']['filename']),
         configs['data']['train_test_split']

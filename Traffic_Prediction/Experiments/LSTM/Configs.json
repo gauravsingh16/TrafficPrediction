@@ -36,59 +36,13 @@
 			},
 			{
 				"type": "lstm",
-				"neurons": 256,
-                "activation": "relu",
-				"return_seq": true
+				"neurons": 128,
+				"return_seq": true,
+				"activation": "relu"
 			},
 			{
-				"type": "dropout",
-				"rate": 0.2
-			},
-			{
-				"type": "lstm",
-				"neurons": 512,
-                "activation": "relu",
-				"return_seq": true
-			},
-			{
-				"type": "dropout",
-				"rate": 0.2
-			},
-			{
-				"type": "lstm",
-				"neurons": 256,
-                "activation": "relu",
-				"return_seq": true
-			},
-			{
-				"type": "dropout",
-				"rate": 0.2
-			},
-			{
-				"type": "lstm",
-				"neurons": 64,
-                "activation": "relu",
-				"return_seq": true
-			},
-			{
-				"type": "dropout",
-				"rate": 0.2
-			},
-			{
-				"type": "lstm",
-				"neurons": 16,
-                "activation": "relu",
-				"return_seq": true
-			},
-			{
-				"type": "dropout",
-				"rate": 0.2
-			},
-			{
-				"type": "lstm",
-				"neurons": 4,
-                "activation": "relu",
-				"return_seq": true
+				"type": "dense",
+				"neurons": 50
 			},
 			{
 				"type": "dense",

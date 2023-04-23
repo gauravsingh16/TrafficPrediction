@@ -6,7 +6,7 @@ from keras.layers import Dense, Dropout, LSTM, TimeDistributed
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras import optimizers
 
-class Model():
+class AELSTM_Model():
 	"""A class for an building and inferencing an lstm model"""
 
 	def __init__(self):
