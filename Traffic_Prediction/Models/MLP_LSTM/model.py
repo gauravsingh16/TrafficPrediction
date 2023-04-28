@@ -2,8 +2,10 @@ import os
 import time
 import datetime as dt
 from keras.models import Sequential, load_model
-from keras.layers import Dense, Dropout, LSTM, TimeDistributed, RepeatVector
+from keras.layers import Dense, Dropout, LSTM, TimeDistributed, RepeatVector, CuDNNLSTM
 from keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras import optimizers
+
 
 class MLP_LSTM_model():
 	"""A class for an building and inferencing an lstm model"""
@@ -24,10 +26,16 @@ class MLP_LSTM_model():
 			return_seq = layer['return_seq'] if 'return_seq' in layer else None
 			input_dim = layer['input_dim'] if 'input_dim' in layer else None
 
-			if layer['type'] == 'dense':
-				self.model.add(TimeDistributed(Dense(neurons, activation=activation)))
+			if layer['type'] == 'LSTM':
+				self.model.add(LSTM( neurons, return_sequences=return_seq, activation = activation))
+			if layer['type'] == 'lstm':
+				self.model.add(LSTM(neurons, return_sequences = return_seq,  input_shape=(data_train.shape[1], input_dim), activation = activation))
 			if layer['type'] == 'dropout':
 				self.model.add(Dropout(dropout_rate))
+			if layer['type'] == 'dense':
+				self.model.add(TimeDistributed(Dense(neurons, activation=activation)))
+			if layer['type'] == 'repeatVector':
+				self.model.add(RepeatVector(data_train.shape[1]))
 
 		self.model.compile(loss=configs['model']['loss'], optimizer=configs['model']['optimizer'], metrics=['accuracy'])
 	
@@ -53,7 +61,7 @@ class MLP_LSTM_model():
 			callbacks=callbacks,
 			workers=1
 		)
-		
+		self.model.summary()
 		time_elapsed = time.time()-start_time
 		print('Time Taken for training %s' % time_elapsed)
 		print('[Model] Training Completed. Model saved as %s' % save_fname)

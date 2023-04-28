@@ -1,8 +1,9 @@
 import os
 import time
 import datetime as dt
+from tensorflow.python.client import device_lib
 from keras.models import Sequential, load_model
-from keras.layers import Dense, Dropout, LSTM, TimeDistributed
+from keras.layers import Dense, Dropout, LSTM, TimeDistributed, CuDNNLSTM
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras import optimizers
 
@@ -11,6 +12,7 @@ class AELSTM_Model():
 
 	def __init__(self):
 		self.model = Sequential()
+		check = device_lib.list_local_devices()
 
 	def load_model(self, filepath):
 		print('[Model] Loading model from file %s' % filepath)
@@ -27,9 +29,9 @@ class AELSTM_Model():
 
 			if layer['type'] == 'dense':
 				self.model.add(TimeDistributed(Dense(neurons, activation=activation)))
-			if layer['type'] == 'LSTM':
-				self.model.add(LSTM(neurons, input_shape=(data_train.shape[1], input_dim), return_sequences=return_seq, activation = activation))
 			if layer['type'] == 'lstm':
+				self.model.add(LSTM(neurons, input_shape=(data_train.shape[1], input_dim), return_sequences=return_seq, activation = activation))
+			if layer['type'] == 'LSTM':
 				self.model.add(LSTM(neurons, return_sequences = return_seq, activation = activation))
 			if layer['type'] == 'dropout':
 				self.model.add(Dropout(dropout_rate))
@@ -58,6 +60,7 @@ class AELSTM_Model():
 			callbacks=callbacks
 		)
 		
+		self.model.summary()
 		time_elapsed = time.time()-start_time
 		print('Time Taken for training %s' % time_elapsed)
 		print('[Model] Training Completed. Model saved as %s' % save_fname)
@@ -69,7 +72,6 @@ class AELSTM_Model():
 		print('[Model] Predicting Point-by-Point...')
 		train_predict = self.model.predict(train_data)
 		test_predict = self.model.predict(test_data)
-		print(train_predict.shape, test_predict.shape)
 		
 		return train_predict, test_predict
 	

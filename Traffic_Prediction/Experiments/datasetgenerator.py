@@ -38,17 +38,17 @@ class DataLoader():
 
 	def get_train_data(self, data_train, y_train):
 
-		data_train = np.reshape(data_train, (data_train.shape[0], data_train.shape[1], 1))
+		x_train = np.reshape(data_train, (data_train.shape[0], data_train.shape[1], 1))
 		y_train = np.reshape(y_train, (y_train.shape[0], y_train.shape[1], 1))
 
-		return data_train, y_train
+		return x_train, y_train
 	
 	def get_test_data(self, data_test, y_test):
         
-		data_test = np.reshape(data_test, (data_test.shape[0], data_test.shape[1], 1))
+		x_test = np.reshape(data_test, (data_test.shape[0], data_test.shape[1], 1))
 		y_test = np.reshape(y_test, (y_test.shape[0], y_test.shape[1], 1))
 
-		return data_test,y_test
+		return x_test,y_test
 
 	def transform(self, y_train, train_predictions, y_test, test_prediction):
 		yTrain = self.yscaler.inverse_transform(y_train.reshape(-1, 1))

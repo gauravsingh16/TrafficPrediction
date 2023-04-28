@@ -37,11 +37,12 @@ def plot_accuracy(accuracy, val_accuracy):
     plt.show()
 
 def plot_loss(loss, val_loss):
-    fig = plt.figure(facecolor='white')
-    ax = fig.add_subplot(111)
-    ax.plot(loss, label='Train Loss')
-    plt.plot(val_loss, label='Val Loss')
-    plt.legend()
+    plt.plot(loss)
+    plt.plot(val_loss)
+    plt.title('model train vs Validation loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'validation'], loc = 'upper right')
     plt.show()
 
 def main():
@@ -116,10 +117,11 @@ def main():
     
     yTrainPredict, yTrain, yTestPredict, yTest = data.transform(y_train[:, 0, 0], train_predictions, y_test, test_prediction)
     
-    plot_training_results(yTrainPredict, yTrain)
+    plot_training_results(yTrainPredict, y_train[:, 0, 0])
     plot_validation_results(yTestPredict,yTest)
     plot_accuracy(accuracy, val_accuracy)
     plot_loss(loss, val_loss)
+
 
 if __name__ == '__main__':
     main()

@@ -15,7 +15,7 @@
 	},
 	"training": {
 		"epochs": 50,
-		"batch_size": 32
+		"batch_size": 16
 	},
 	"model": {
 		"loss": "mse",
@@ -23,8 +23,8 @@
 		"save_dir": "LSTM/saved_models",
 		"layers": [
 			{
-				"type": "LSTM",
-				"neurons": 256,
+				"type": "lstm",
+				"neurons": 128,
 				"input_timesteps": 49,
 				"input_dim": 1,
 				"return_seq": true,
@@ -32,21 +32,36 @@
 			},
 			{
 				"type": "dropout",
-				"rate": 0.2
+				"rate": 0.5
 			},
 			{
-				"type": "lstm",
-				"neurons": 128,
+				"type": "LSTM",
+				"neurons": 64,
+				"input_timesteps": 49,
+				"input_dim": 1,
 				"return_seq": true,
 				"activation": "relu"
 			},
 			{
-				"type": "dense",
-				"neurons": 50
+				"type": "dropout",
+				"rate": 0.5
+			},
+			{
+				"type": "LSTM",
+				"neurons": 64,
+				"input_timesteps": 49,
+				"input_dim": 1,
+				"return_seq": true,
+				"activation": "relu"
+			},
+			{
+				"type": "dropout",
+				"rate": 0.5
 			},
 			{
 				"type": "dense",
-				"neurons": 1
+				"neurons": 1,
+				"activation": "linear"
 			}
 		]
 	}
