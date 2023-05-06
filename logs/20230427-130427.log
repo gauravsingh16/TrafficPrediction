@@ -1,0 +1,3 @@
+[2023-m-27 13:58:50],(module=run func=main) INFO -- :Successfully downloaded sampled data from <Utils.InputSampler.InputSampler object at 0x100c69490> for training )
+[2023-m-27 13:58:52],(module=run func=main) INFO -- :Successfully created a sampled data of 500)
+[2023-m-27 13:59:21],(module=model func=train_generator) INFO -- :<keras.callbacks.History object at 0x17751e9a0>)
