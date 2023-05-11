@@ -2,20 +2,21 @@
 	"data": {
 		"filename": "/home/gaurav/TrafficPrediction/dataNetwork.csv",
 		"columns": [
-			"SrNo",
 			"Timestamp",
 			"Sender's IP",
             "Receiver's IP",
-            "Protocol Stack"
+            "Protocol Stack",
+			"Packets"
 		],
 		"cols":	[
 			"Packets"
 		],
-		"train_test_split": 0.80
+		"sequence_length": 50,
+		"train_test_split": 0.70
 	},
 	"training": {
-		"epochs": 50,
-		"batch_size": 16
+		"epochs": 200,
+		"batch_size": 32
 	},
 	"model": {
 		"loss": "mse",
@@ -23,10 +24,10 @@
 		"save_dir": "LSTM/saved_models",
 		"layers": [
 			{
-				"type": "lstm",
-				"neurons": 128,
-				"input_timesteps": 49,
-				"input_dim": 1,
+				"type": "LSTM",
+				"neurons": 64,
+				"input_timesteps": 50,
+				"input_dim": 5,
 				"return_seq": true,
 				"activation": "relu"
 			},
@@ -36,31 +37,13 @@
 			},
 			{
 				"type": "LSTM",
-				"neurons": 64,
-				"input_timesteps": 49,
-				"input_dim": 1,
+				"neurons": 8,
 				"return_seq": true,
 				"activation": "relu"
-			},
-			{
-				"type": "dropout",
-				"rate": 0.5
-			},
-			{
-				"type": "LSTM",
-				"neurons": 64,
-				"input_timesteps": 49,
-				"input_dim": 1,
-				"return_seq": true,
-				"activation": "relu"
-			},
-			{
-				"type": "dropout",
-				"rate": 0.5
 			},
 			{
 				"type": "dense",
-				"neurons": 1,
+				"neurons": 5,
 				"activation": "linear"
 			}
 		]

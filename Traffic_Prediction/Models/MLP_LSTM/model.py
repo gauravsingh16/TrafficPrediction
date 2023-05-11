@@ -33,7 +33,9 @@ class MLP_LSTM_model():
 			if layer['type'] == 'dropout':
 				self.model.add(Dropout(dropout_rate))
 			if layer['type'] == 'dense':
-				self.model.add(TimeDistributed(Dense(neurons, activation=activation)))
+				self.model.add(TimeDistributed(Dense(neurons, activation=activation)) )
+			if layer['type'] == 'Dense':
+				self.model.add((Dense(neurons, activation=activation)))
 			if layer['type'] == 'repeatVector':
 				self.model.add(RepeatVector(data_train.shape[1]))
 
