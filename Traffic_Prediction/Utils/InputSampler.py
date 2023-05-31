@@ -1,5 +1,8 @@
 import csv
 import random
+import datetime
+from pandas import read_csv
+
 
 class InputSampler():
   
@@ -32,4 +35,20 @@ class InputSampler():
       csv_writer.writerow(i_data)
     csv_file.close()
     network_data.close()
+    
+    #self.update_dataset()
     return True
+  
+  def parse(self, x):
+    return datetime.strptime(x, '%Timestamp')
+  
+  def update_dataset(self):
+    dataset = read_csv('dataNetwork.csv')
+    dataset.drop('SrNo', axis=1, inplace=True)
+    # manually specify column names
+    dataset.columns = ["Timestamp","Sender's IP", "Recievier's IP", 'Protocol Stack', 'Packets']
+    # mark all NA values with 0
+    # summarize first 5 rows
+    print(dataset.head(5))
+    # save to file
+    dataset.to_csv('dataNetwork.csv')

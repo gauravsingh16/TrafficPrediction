@@ -6,7 +6,7 @@ import pandas as pd
 import datetime as dt
 import matplotlib.pyplot as plt
 from Models.LSTM.model import LSTM_Model
-from Models.MLP_LSTM.model import MLP_LSTM_model
+from Models.AE_LSTM.model import AE_LSTM_Model
 from Utils.InputSampler import InputSampler
 from Experiments.datasetgenerator import DataLoader
 from sklearn.metrics import mean_squared_error
@@ -58,19 +58,19 @@ def main():
     else:
         dataset.create_sample(input_size)
         
-    model_input = input("Specificy the model you want to try. Please choose LSTM or MLP : ")
+    model_input = input("Specificy the model you want to try. Please choose LSTM or AELSTM : ")
     
     if model_input == "LSTM":
         configs_path = os.path.join(
             os.path.dirname(__file__), "Experiments/LSTM", "Configs.json"
         )
-        model = AELSTM_Model()
+        model = LSTM_Model()
         
-    elif model_input == "MLP":
+    elif model_input == "AELSTM":
         configs_path = os.path.join(
-            os.path.dirname(__file__), "Experiments/MLP-LSTM", "Configs.json"
+            os.path.dirname(__file__), "Experiments/AE-LSTM", "Configs.json"
         )
-        model = MLP_LSTM_model()
+        model = AE_LSTM_Model()
 
     configs = json.load(open(configs_path, 'r'))
     if not os.path.exists(configs['model']['save_dir']): 
@@ -81,8 +81,7 @@ def main():
         configs['data']['train_test_split']
     )
    
-    data_train, data_test = data.create_database(configs['data']['columns'],
-        configs['data']['cols'])
+    data_train, data_test = data.create_database(configs['data']['columns'],configs['data']['cols'])
     
     x_train, y_train = data.get_train_data(data_train, configs['data']['sequence_length'])
     x_test, y_test = data.get_test_data(data_test,  configs['data']['sequence_length'])

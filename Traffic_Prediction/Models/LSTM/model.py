@@ -31,11 +31,11 @@ class LSTM_Model():
 			if layer['type'] == 'dense':
 				self.model.add(TimeDistributed(Dense(neurons, activation=activation)))
 			if layer['type'] == 'LSTM':
-				self.model.add(CuDNNLSTM(neurons, input_shape=(input_timesteps, input_dim), return_sequences=return_seq))
+				self.model.add(LSTM(neurons, input_shape=(input_timesteps, input_dim), return_sequences=return_seq))
 			if layer['type'] == 'dropout':
 				self.model.add(Dropout(dropout_rate))
 
-		self.model.compile(loss=configs['model']['loss'], optimizer=optimizers.Adam(learning_rate=0.0001), metrics=['accuracy'])
+		self.model.compile(loss=configs['model']['loss'], optimizer=optimizers.Adam(learning_rate=0.000001), metrics=['accuracy'])
 		
 		print('[Model] Model Compiled')
 
