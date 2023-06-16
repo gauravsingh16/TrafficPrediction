@@ -2,10 +2,12 @@
 	"data": {
 		"filename": "/home/gaurav/TrafficPrediction/dataNetwork.csv",
 		"columns": [
-			"Timestamp",
 			"Sender's IP",
             "Receiver's IP",
-            "Protocol Stack"
+            "Protocol Stack",
+			"Connectivity",
+			"Seconds",
+			"Minutes"		
 		],
 		"cols":	[
 			"Packets"
@@ -26,7 +28,7 @@
 				"type": "LSTM",
 				"neurons": 128,
 				"input_timesteps": 4,
-				"input_dim": 4,
+				"input_dim": 6,
 				"return_seq": true,
 				"activation": "relu"
 			},
@@ -36,7 +38,17 @@
 			},
 			{
 				"type": "LSTM",
-				"neurons": 128,
+				"neurons": 64,
+				"return_seq": true,
+				"activation": "relu"
+			},
+			{
+				"type": "dropout",
+				"rate": 0.5
+			},
+			{
+				"type": "LSTM",
+				"neurons": 32,
 				"return_seq": true,
 				"activation": "relu"
 			},
@@ -56,13 +68,17 @@
 			},
 			{
 				"type": "LSTM",
-				"neurons": 8,
+				"neurons": 4,
 				"return_seq": true,
 				"activation": "relu"
 			},
 			{
+				"type": "dropout",
+				"rate": 0.5
+			},
+			{
 				"type": "dense",
-				"neurons": 4,
+				"neurons": 3,
 				"activation": "linear"
 			}
 		]

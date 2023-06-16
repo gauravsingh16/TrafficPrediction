@@ -15,7 +15,7 @@ def plot_training_results(predicted_data, true_data):
     plt.plot(true_data)
     plt.plot(predicted_data)
     plt.title('Predicted Data vs Train Data')
-    plt.ylabel('values')
+    plt.ylabel('Traffic Network')
     plt.xlabel('Data')
     plt.legend([' Train Data', ' Predicted Data'], loc = 'upper right')
     plt.show()
@@ -24,7 +24,7 @@ def plot_validation_results(predicted_data, true_data):
     plt.plot(predicted_data)
     plt.plot(true_data)
     plt.title('Predicted Data vs Test Data')
-    plt.ylabel('values')
+    plt.ylabel('Traffic Network')
     plt.xlabel('Data')
     plt.legend([' Test Data', 'Predicted Data'], loc = 'upper right')
     plt.show()
@@ -46,6 +46,8 @@ def plot_loss(loss, val_loss):
     plt.xlabel('epoch')
     plt.legend(['Train Loss', 'Validation Loss'], loc = 'upper right')
     plt.show()
+    
+
 
 def main():
     
@@ -119,7 +121,6 @@ def main():
     
     testScore = np.sqrt(mean_squared_error(yTest, yTestPredict))
     print('Test Score: %.2f RMSE' % (testScore))
-    
     plot_training_results(yTrainPredict, yTrain)
     plot_validation_results(yTestPredict, yTest)
     plot_accuracy(accuracy, val_accuracy)

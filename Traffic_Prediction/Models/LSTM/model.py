@@ -35,7 +35,7 @@ class LSTM_Model():
 			if layer['type'] == 'dropout':
 				self.model.add(Dropout(dropout_rate))
 
-		self.model.compile(loss=configs['model']['loss'], optimizer=optimizers.Adam(learning_rate=0.000001), metrics=['accuracy'])
+		self.model.compile(loss=configs['model']['loss'], optimizer=optimizers.Adam(learning_rate=0.00001), metrics=['accuracy'])
 		
 		print('[Model] Model Compiled')
 
