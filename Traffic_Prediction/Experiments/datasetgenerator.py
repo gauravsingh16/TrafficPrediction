@@ -19,14 +19,22 @@ class DataLoader():
 		dataset = self.dataframe
 		minValues1 = []
 		secValues = []
+		randLink = []
+		dataset.drop("SrNo", axis = 1, inplace = True)
 		sender_label = self.dataframe.get(["Sender's IP"])
 		receiver_label = self.dataframe.get(["Receiver's IP"])
 		protocol_label = self.dataframe.get(["Protocol Stack"])
-		print(dataset)
+		#print(dataset)
 		dataset["Sender's IP"] = le.fit_transform(sender_label)
 		dataset["Receiver's IP"] = le.fit_transform(receiver_label)
 		dataset["Protocol Stack"] = le.fit_transform(protocol_label)
-		dataset["Connectivity"] = self.dataframe.get(["Connectivity"])
+		
+		connectivity_type = [0, 1]
+		for i in range(len(dataset)):
+			randValue = random.choice(connectivity_type)
+			randLink.append(randValue)
+          
+		dataset['Connectivity'] = randLink
 		#dataset.drop_duplicates(subset=['Timestamp'], keep = 'first', inplace = True)
 		
 		#dataset.drop_duplicates(subset=['Timestamp'], keep = 'first', inplace = True)
@@ -49,11 +57,12 @@ class DataLoader():
 		#print(dataset)
 		self.feature_len = len(data_columns)
 		self.data_train = dataset.get(data_columns).values[:self.i_split]
-		self.data_test  = dataset.get(data_columns).values[self.i_split:]
-
+		self.data_test  = dataset.get(data_columns).values[self.i_split:]		
+		#del dataset['SrNo']
+		#dataset.drop(["SrNo"], axis = 1, inplace = True)
 		self.yTrain = dataset.get(predict_cols).values[:self.i_split]
 		self.yTest = dataset.get(predict_cols).values[self.i_split:]
-		#print(dataset)
+		print(dataset)
 
 		self.len_train = len(self.data_train)
 		self.len_y_train = len(self.yTrain)
