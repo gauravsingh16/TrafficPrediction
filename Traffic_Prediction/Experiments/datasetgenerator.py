@@ -134,6 +134,8 @@ class DataLoader():
 			#y = value[4]
 			#pyplot.plot(scalex = x,scaley = y)
 			pyplot.title(dataset.columns[group], y =0.5, loc= 'right')
+			pyplot.xlabel('Timestamp',  fontsize = 16, fontdict=dict(weight='bold'))
+			pyplot.ylabel('Packets',  fontsize = 16, fontdict=dict(weight='bold'))
 			i += 1
 		pyplot.show()
   

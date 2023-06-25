@@ -32,8 +32,6 @@ class AE_LSTM_Model():
 				self.model.add(LSTM(neurons, return_sequences = return_seq,  input_shape=(input_timesteps, input_dim), activation = activation))
 			if layer['type'] == 'dropout':
 				self.model.add(Dropout(dropout_rate))
-			if layer['type'] == 'dense':
-				self.model.add(TimeDistributed(Dense(neurons, activation=activation)) )
 			if layer['type'] == 'Dense':
 				self.model.add((Dense(neurons, activation=activation)))
 			if layer['type'] == 'repeatVector':
@@ -54,9 +52,7 @@ class AE_LSTM_Model():
 			EarlyStopping(monitor='val_loss', patience=2),
 			ModelCheckpoint(filepath=save_fname, monitor='loss', save_best_only=True)
 		]
-		print(data_train)
-		print("Teri maa ki chut same aaya toh")
-		print(y_train)
+
 		history = self.model.fit(
 			data_train,
 			y_train,

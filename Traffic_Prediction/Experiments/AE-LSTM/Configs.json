@@ -5,16 +5,18 @@
 			"Sender's IP",
             "Receiver's IP",
             "Protocol Stack",
-			"Packets"
+			"Connectivity",
+			"Seconds",
+			"Minutes"		
 		],
 		"cols":	[
 			"Packets"
 		],
-		"sequence_length":2,
+		"sequence_length": 1,
 		"train_test_split": 0.80
 	},
 	"training": {
-		"epochs": 50,
+		"epochs": 100,
 		"batch_size": 32
 	},
 	"model": {
@@ -23,21 +25,45 @@
 		"save_dir": "AE_LSTM/saved_models",
 		"layers": [{
 			"type": "lstm",
-			"neurons": 64,
-			"input_timesteps": 2,
-			"input_dim": 5,
+			"neurons": 16,
+			"input_timesteps": 1,
+			"input_dim": 6,
+			"return_seq": true,
+			"activation": "relu"
+		},
+		{
+			"type":"dropout",
+			"rate": 0.8
+		},
+		{
+			"type": "lstm",
+			"neurons": 8,
 			"return_seq": false,
 			"activation": "relu"
 		},
 		{
+			"type":"dropout",
+			"rate": 0.8
+		},
+		{
 			"type": "repeatVector",
-			"repeatvector_rate": 2
+			"repeatvector_rate": 1
 		},
 		{
 			"type": "lstm",
-			"neurons": 64,
-			"input_timesteps": 2,
-			"input_dim": 5,
+			"neurons": 8,
+			"return_seq": true,
+			"activation": "relu"
+		},
+		{
+			"type":"dropout",
+			"rate": 0.8
+		},
+		{
+			"type": "lstm",
+			"neurons": 16,
+			"input_timesteps": 1,
+			"input_dim": 6,
 			"return_seq":true,
 			"activation": "relu"
 		},
@@ -47,7 +73,7 @@
 		},
 		{
 			"type": "Dense",
-			"neurons": 5,
+			"neurons": 2,
 			"activation": "linear"
 		}
 		]
