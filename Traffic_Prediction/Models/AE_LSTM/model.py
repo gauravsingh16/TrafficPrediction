@@ -37,7 +37,7 @@ class AE_LSTM_Model():
 			if layer['type'] == 'repeatVector':
 				self.model.add(RepeatVector(repeatvector_rate))
 
-		self.model.compile(loss=configs['model']['loss'], optimizer=optimizers.Adam(learning_rate = 0.0001), metrics=['accuracy'])
+		self.model.compile(loss=configs['model']['loss'], optimizer=optimizers.Adam(learning_rate = 0.001), metrics=['accuracy'])
 	
 		print('[Model] Model Compiled')
 

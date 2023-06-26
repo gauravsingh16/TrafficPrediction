@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 class InputSampler():
   
   def __init__(self):
-    self.database = '/home/gaurav/TrafficPrediction/Traffic_Prediction/dataset1.csv'
+    self.database = '/Users/shrey_98/Desktop/TrafficPrediction/Traffic_Prediction/dataset1.csv'
 
   def create_sample(self, dataset_size):
     '''

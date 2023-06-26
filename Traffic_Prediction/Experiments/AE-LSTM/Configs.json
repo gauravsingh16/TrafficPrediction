@@ -1,6 +1,6 @@
 {
 	"data": {
-		"filename": "/home/gaurav/TrafficPrediction/dataNetwork.csv",
+		"filename": "/Users/shrey_98/Desktop/TrafficPrediction/dataNetwork.csv",
 		"columns": [
 			"Sender's IP",
             "Receiver's IP",
@@ -25,7 +25,7 @@
 		"save_dir": "AE_LSTM/saved_models",
 		"layers": [{
 			"type": "lstm",
-			"neurons": 16,
+			"neurons": 32,
 			"input_timesteps": 1,
 			"input_dim": 6,
 			"return_seq": true,
@@ -33,17 +33,17 @@
 		},
 		{
 			"type":"dropout",
-			"rate": 0.8
+			"rate": 0.5
 		},
 		{
 			"type": "lstm",
-			"neurons": 8,
+			"neurons": 16,
 			"return_seq": false,
 			"activation": "relu"
 		},
 		{
 			"type":"dropout",
-			"rate": 0.8
+			"rate": 0.5
 		},
 		{
 			"type": "repeatVector",
@@ -51,17 +51,17 @@
 		},
 		{
 			"type": "lstm",
-			"neurons": 8,
+			"neurons": 16,
 			"return_seq": true,
 			"activation": "relu"
 		},
 		{
 			"type":"dropout",
-			"rate": 0.8
+			"rate": 0.5
 		},
 		{
 			"type": "lstm",
-			"neurons": 16,
+			"neurons": 32,
 			"input_timesteps": 1,
 			"input_dim": 6,
 			"return_seq":true,
@@ -69,11 +69,11 @@
 		},
 		{
 			"type":"dropout",
-			"rate": 0.8
+			"rate": 0.5
 		},
 		{
 			"type": "Dense",
-			"neurons": 2,
+			"neurons": 1,
 			"activation": "linear"
 		}
 		]

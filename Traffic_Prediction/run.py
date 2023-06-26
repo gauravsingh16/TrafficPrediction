@@ -83,10 +83,10 @@ def main():
         configs['data']['train_test_split']
     )
    
-    data_train, data_test = data.create_database(configs['data']['columns'],configs['data']['cols'])
+    data_train, data_test = data.create_database(configs['data']['columns'],configs['data']['cols'],  configs['data']['sequence_length'])
     
-    x_train, y_train = data.get_train_data(data_train, configs['data']['sequence_length'])
-    x_test, y_test = data.get_test_data(data_test,  configs['data']['sequence_length'])
+    x_train, y_train = data.get_train_data()
+    x_test, y_test = data.get_test_data()
     
     size_of_training = len(x_train)
     

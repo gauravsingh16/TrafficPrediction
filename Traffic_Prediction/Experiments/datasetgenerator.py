@@ -3,6 +3,7 @@ import pandas as pd
 import random
 import csv
 from matplotlib import pyplot
+from pandas import concat
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 
 class DataLoader():
@@ -10,9 +11,9 @@ class DataLoader():
 	def __init__(self, filename, split):
 		self.dataframe = pd.read_csv(filename)
 		self.yscaler = MinMaxScaler(feature_range=(0,1))
-		self.i_split = int(len(self.dataframe) * split)
+		#self.i_split = int(len(self.dataframe) * split)
 	
-	def create_database(self, data_columns, predict_cols):
+	def create_database(self, data_columns, predict_cols, sequence_length):
 
 		le = LabelEncoder()
 		scaler = MinMaxScaler(feature_range=(0,1))
@@ -56,36 +57,35 @@ class DataLoader():
 		dataset["Packets"] = self.yscaler.fit_transform(self.dataframe.get(["Packets"]))	
 		#print(dataset)
 		self.feature_len = len(data_columns)
-		self.data_train = dataset.get(data_columns).values[:self.i_split]
-		self.data_test  = dataset.get(data_columns).values[self.i_split:]		
-		#del dataset['SrNo']
-		#dataset.drop(["SrNo"], axis = 1, inplace = True)
-		self.yTrain = dataset.get(predict_cols).values[:self.i_split]
-		self.yTest = dataset.get(predict_cols).values[self.i_split:]
-		print(dataset)
+		data_x = self.split_sequences(dataset, sequence_length, sequence_length)
+		i_split = int(len(data_x) * 0.80)
 
-		self.len_train = len(self.data_train)
-		self.len_y_train = len(self.yTrain)
+		train = data_x.iloc[:i_split, :]
+		test = data_x.iloc[i_split:, :]
+		train.drop(["Packets"], axis=1, inplace=True)
+		test.drop(["Packets"], axis=1, inplace=True)
+		self.data_train, self.yTrain  = train.iloc[:, :], train.iloc[:, -1]
+		self.data_test, self.yTest  = test.iloc[:, :], test.iloc[:, -1]		
+
+		#self.len_train = len(self.data_train)
+		#self.len_y_train = len(self.yTrain)
 		return self.data_train, self.data_test
 
-	def get_train_data(self, data_train, sequence_length):
-		data_x, data_y = self.split_sequences(self.data_train, self.yTrain, sequence_length )
-		#print(data_x.shape)
-		x_train = np.reshape(data_x, (data_x.shape[0], data_x.shape[1], 6))
-  
-		y_train = np.reshape(data_y, (data_y.shape[0], data_y.shape[1], 1))
-		#print(x_train.shape)
+	def get_train_data(self):
+
+		x_train = np.reshape(self.data_train, (self.data_train.shape[0], 1, self.data_train.shape[1]))
+		y_train = np.reshape(self.yTrain, (self.yTrain.shape[0], 1, 1))
 		return x_train, y_train
 	
-	def get_test_data(self, data_test, sequence_length):
-		#print(self.data_test)
-		data_x, data_y = self.split_sequences(self.data_test, self.yTest, sequence_length ) 
-		#print(data_y)
-		x_test = np.reshape(data_x, (data_x.shape[0], data_x.shape[1], 6))
-  
+	def get_test_data(self):
+		
+		x_test = np.reshape(self.data_test, (self.data_test.shape[0], 1, self.data_test.shape[1]))
+		y_test = np.reshape(self.yTest, (self.yTest.shape[0], 1, 1))
+		#x_test = np.reshape(data_x, (data_x.shape[0], data_x.shape[1], 6))
+		#print(x_test.shape)
 		#_, data_y = self.split_sequences(self.yTest, sequence_length ) 
 
-		y_test = np.reshape(data_y, (data_y.shape[0], data_y.shape[1], 1))
+		#y_test = np.reshape(self.yTest, (self.yTest.shape[0], self.yTest.shape[1], 1))
 		
 		return x_test,y_test
 
@@ -98,24 +98,26 @@ class DataLoader():
 		return yTrainPredict, yTrain, yTest, yTestPredict
 
   
-	def split_sequences(self, sequences, y_sequence, sequence_length):
-		X, y = list(), list()
-		for i in range(len(sequences)):
+	def split_sequences(self, data_sequences, input_sequence, output_sequence, dropnan = True):
+		n_vars = 1 if type(data_sequences) is list else data_sequences.shape[1]
+		x, y = list(), list()
+		for i in range(input_sequence, 0, -1):
+			x.append(self.dataframe.shift(i))
+			y += [('var%d(t-%d)'% (j+1, i)) for j in range(n_vars)]
  		# find the end of this pattern
-			end_ix = i + sequence_length
-			out_ix = end_ix + sequence_length -1
- 			# check if we are beyond the dataset
-			if out_ix > len(sequences):
-				break
+		for i in range(0, output_sequence):
+			x.append(self.dataframe.shift(-i))
+			if i == 0:
+				y += [('var%d(t)'% (j+1)) for j in range(n_vars)]
+			else:
+				y += [('var%d(t-%d)'% (j+1, i)) for j in range(n_vars)]
+		
+		agg = concat(x, axis=0)
+		agg.x = y
  		# gather input and output parts of the pattern
-			seq_x = sequences[i:end_ix, :]
-			
-			seq_y = y_sequence[end_ix-1:out_ix, : ]
-	
-			X.append(seq_x)
-			y.append(seq_y)
-			
-		return np.array(X), np.array(y)	
+		if dropnan:
+			agg.dropna(inplace=True)
+		return agg
   
 	def actual_traffic(self, dataset):
 		values = dataset.values
