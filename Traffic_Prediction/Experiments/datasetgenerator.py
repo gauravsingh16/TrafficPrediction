@@ -4,6 +4,7 @@ import random
 import csv
 from matplotlib import pyplot
 from pandas import concat
+from numpy import concatenate
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 
 class DataLoader():
@@ -13,7 +14,7 @@ class DataLoader():
 		self.yscaler = MinMaxScaler(feature_range=(0,1))
 		#self.i_split = int(len(self.dataframe) * split)
 	
-	def create_database(self, data_columns, predict_cols, sequence_length):
+	def create_database(self, data_columns, predict_cols, input_timestamps, sequence_length):
 
 		le = LabelEncoder()
 		scaler = MinMaxScaler(feature_range=(0,1))
@@ -57,7 +58,7 @@ class DataLoader():
 		dataset["Packets"] = self.yscaler.fit_transform(self.dataframe.get(["Packets"]))	
 		#print(dataset)
 		self.feature_len = len(data_columns)
-		data_x = self.split_sequences(dataset, sequence_length, sequence_length)
+		data_x = self.split_sequences(dataset, input_timestamps, sequence_length)
 		i_split = int(len(data_x) * 0.80)
 
 		train = data_x.iloc[:i_split, :]
@@ -89,7 +90,7 @@ class DataLoader():
 		
 		return x_test,y_test
 
-	def transform(self, y_train, train_predictions, y_test, test_prediction):
+	def transform(self, y_train, train_predictions, x_test, y_test, test_prediction):
 		yTrain = self.yscaler.inverse_transform(y_train.reshape(-1, 1))
 		yTrainPredict = self.yscaler.inverse_transform(train_predictions[:, 0, 0].reshape(-1, 1))
 		yTest = self.yscaler.inverse_transform(y_test.reshape(-1, 1))

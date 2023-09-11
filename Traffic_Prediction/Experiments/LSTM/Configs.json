@@ -7,7 +7,8 @@
             "Protocol Stack",
 			"Connectivity",
 			"Seconds",
-			"Minutes"		],
+			"Minutes"		
+		],
 		"cols":	[
 			"Packets"
 		],
@@ -33,7 +34,7 @@
 			},
 			{
 				"type": "dropout",
-				"rate": 0.5
+				"rate": 0.65
 			},
 			{
 				"type": "LSTM",
@@ -43,17 +44,17 @@
 			},
 			{
 				"type": "dropout",
-				"rate": 0.5
+				"rate": 0.65
 			},
 			{
 				"type": "LSTM",
-				"neurons": 32,
+				"neurons": 64,
 				"return_seq": true,
 				"activation": "relu"
 			},
 			{
 				"type": "dropout",
-				"rate": 0.5
+				"rate": 0.65
 			},
 			{
 				"type": "LSTM",
@@ -63,7 +64,7 @@
 			},
 			{
 				"type": "dropout",
-				"rate": 0.5
+				"rate": 0.65
 			},
 			{
 				"type": "LSTM",
@@ -73,7 +74,7 @@
 			},
 			{
 				"type": "dropout",
-				"rate": 0.5
+				"rate": 0.65
 			},
 			{
 				"type": "dense",

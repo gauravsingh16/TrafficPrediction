@@ -7,25 +7,26 @@ import datetime as dt
 import matplotlib.pyplot as plt
 from Models.LSTM.model import LSTM_Model
 from Models.AE_LSTM.model import AE_LSTM_Model
+from Models.MLP_AELSTM.model import MLP_AELSTM_Model
 from Utils.InputSampler import InputSampler
 from Experiments.datasetgenerator import DataLoader
 from sklearn.metrics import mean_squared_error
 
-def plot_training_results(predicted_data, true_data):
+def plot_training_results(true_data, predicted_data ):
     plt.plot(true_data)
     plt.plot(predicted_data)
     plt.title('Predicted Data vs Train Data')
-    plt.ylabel('Traffic Network')
-    plt.xlabel('Data')
+    plt.ylabel('MSE_value')
+    plt.xlabel('Time(Minutes)')
     plt.legend([' Train Data', ' Predicted Data'], loc = 'upper right')
     plt.show()
     
-def plot_validation_results(predicted_data, true_data):
-    plt.plot(predicted_data)
+def plot_validation_results(true_data, predicted_data ):
     plt.plot(true_data)
+    plt.plot(predicted_data)
     plt.title('Predicted Data vs Test Data')
-    plt.ylabel('Traffic Network')
-    plt.xlabel('Data')
+    plt.ylabel('MSE_value')
+    plt.xlabel('Time(Minutes)')
     plt.legend([' Test Data', 'Predicted Data'], loc = 'upper right')
     plt.show()
 
@@ -60,7 +61,7 @@ def main():
     else:
         dataset.create_sample(input_size)
         
-    model_input = input("Specificy the model you want to try. Please choose LSTM or AELSTM : ")
+    model_input = input("Specificy the model you want to try. Please choose LSTM, AE-LSTM, MLP : ")
     
     if model_input == "LSTM":
         configs_path = os.path.join(
@@ -73,6 +74,12 @@ def main():
             os.path.dirname(__file__), "Experiments/AE-LSTM", "Configs.json"
         )
         model = AE_LSTM_Model()
+    
+    elif model_input == "MLP":
+        configs_path = os.path.join(
+            os.path.dirname(__file__), "Experiments/MLP_AELSTM", "Configs.json"
+        )
+        model = MLP_AELSTM_Model()
 
     configs = json.load(open(configs_path, 'r'))
     if not os.path.exists(configs['model']['save_dir']): 
@@ -83,7 +90,7 @@ def main():
         configs['data']['train_test_split']
     )
    
-    data_train, data_test = data.create_database(configs['data']['columns'],configs['data']['cols'],  configs['data']['sequence_length'])
+    data_train, data_test = data.create_database(configs['data']['columns'],configs['data']['cols'], 1, configs['data']['sequence_length'])
     
     x_train, y_train = data.get_train_data()
     x_test, y_test = data.get_test_data()
@@ -114,15 +121,15 @@ def main():
     
     train_predictions, test_prediction = model.predict_point_by_point(x_train, x_test)
 
-    yTrainPredict, yTrain, yTestPredict, yTest = data.transform(y_train[:,0,0], train_predictions, y_test[:,0,0], test_prediction)
+    yTrainPredict, yTrain, yTest, yTestPredict = data.transform(y_train[:,0,0], train_predictions, x_test[:, 0, 0], y_test[:,0,0], test_prediction)
 
     trainScore = np.sqrt(mean_squared_error(yTrain, yTrainPredict))
     print('Train Score: %.2f RMSE' % (trainScore))
     
     testScore = np.sqrt(mean_squared_error(yTest, yTestPredict))
     print('Test Score: %.2f RMSE' % (testScore))
-    plot_training_results(yTrainPredict, yTrain)
-    plot_validation_results(yTestPredict, yTest)
+    plot_training_results(yTrain, yTrainPredict)
+    plot_validation_results(yTest, yTestPredict)
     plot_accuracy(accuracy, val_accuracy)
     plot_loss(loss, val_loss)
 

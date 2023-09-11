@@ -1,0 +1,97 @@
+{
+	"data": {
+		"filename": "/Users/shrey_98/Desktop/TrafficPrediction/dataNetwork.csv",
+		"columns": [
+			"Sender's IP",
+            "Receiver's IP",
+            "Protocol Stack",
+			"Connectivity",
+			"Seconds",
+			"Minutes"		
+		],
+		"cols":	[
+			"Packets"
+		],
+		"sequence_length": 2,
+		"train_test_split": 0.80
+	},
+	"training": {
+		"epochs": 100,
+		"batch_size": 32
+	},
+	"model": {
+		"loss": "mse",
+		"optimizer": "adam",
+		"save_dir": "AE_LSTM/saved_models",
+		"layers": [{
+			"type": "lstm",
+			"neurons": 128,
+			"input_timesteps": 1,
+			"input_dim": 6,
+			"return_seq": true,
+			"activation": "relu"
+		},
+		{
+			"type":"dropout",
+			"rate": 0.2
+		},
+        {
+            "type":"lstm",
+            "neurons":32,
+            "return_seq":false,
+            "activation":"relu"
+        },
+        {
+            "type":"dropout",
+            "rate":0.2
+        },
+		{
+			"type": "repeatVector",
+			"repeatvector_rate": 1
+		},
+        {
+			"type": "Dense",
+			"neurons": 1,
+			"activation": "linear"
+		},
+        {
+			"type": "Dense",
+			"neurons": 1,
+			"activation": "linear"
+		},
+        {
+			"type": "Dense",
+			"neurons": 1,
+			"activation": "linear"
+		}, 
+        {
+			"type": "Dense",
+			"neurons": 1,
+			"activation": "linear"
+		},
+        {
+            "type":"lstm",
+            "neurons":32,
+            "return_seq":true,
+            "activation":"relu"
+        },
+        {
+            "type":"dropout",
+            "rate":0.2
+        },
+		{
+			"type": "lstm",
+			"neurons": 128,
+			"input_timesteps": 1,
+			"input_dim": 6,
+			"return_seq":true,
+			"activation": "relu"
+		},
+		{
+			"type": "Dense",
+			"neurons": 1,
+			"activation": "linear"
+		}
+		]
+	}
+}

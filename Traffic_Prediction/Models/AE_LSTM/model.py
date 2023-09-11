@@ -49,7 +49,7 @@ class AE_LSTM_Model():
 		
 		save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y'), str(epochs)))
 		callbacks = [
-			EarlyStopping(monitor='val_loss', patience=2),
+			EarlyStopping(monitor='val_loss', patience=10),
 			ModelCheckpoint(filepath=save_fname, monitor='loss', save_best_only=True)
 		]
 

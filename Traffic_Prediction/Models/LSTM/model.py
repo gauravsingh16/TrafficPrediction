@@ -35,7 +35,7 @@ class LSTM_Model():
 			if layer['type'] == 'dropout':
 				self.model.add(Dropout(dropout_rate))
 
-		self.model.compile(loss=configs['model']['loss'], optimizer=optimizers.Adam(learning_rate=0.00001), metrics=['accuracy'])
+		self.model.compile(loss=configs['model']['loss'], optimizer=optimizers.Adam(learning_rate=0.0001), metrics=['accuracy'])
 		
 		print('[Model] Model Compiled')
 
@@ -47,7 +47,7 @@ class LSTM_Model():
 		
 		save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y'), str(epochs)))
 		callbacks = [
-			EarlyStopping(monitor='val_loss', patience=5),
+			EarlyStopping(monitor='val_loss', patience=10),
 			ModelCheckpoint(filepath=save_fname, monitor='loss', save_best_only=True)
 		]
 		history = self.model.fit(
